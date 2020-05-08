@@ -1,6 +1,4 @@
-import MessageListItem from '../components/MessageListItem';
 import React, { useState } from 'react';
-import { Message, getMessages } from '../data/messages';
 import {
   IonContent,
   IonHeader,
@@ -8,15 +6,44 @@ import {
   IonPage,
   IonRefresher,
   IonRefresherContent,
-  IonTitle,
   IonToolbar,
-  useIonViewWillEnter
+  useIonViewWillEnter,
+  IonButton,
+  IonSearchbar,
 } from '@ionic/react';
+import MessageListItem from '../components/MessageListItem';
+import { Message, getMessages } from '../data/messages';
+
+import FormDialog from '../components/FormDialog';
+
 import './Home.css';
 
-const Home: React.FC = () => {
+const inputs = [
+  {
+    id: 1,
+    label: 'Name',
+    name: 'name',
+    type: 'text',
+  },
+  {
+    id: 2,
+    label: 'Age',
+    name: 'age',
+    type: 'number',
+  },
+  {
+    id: 2,
+    label: 'Description',
+    name: 'description',
+    type: 'number',
+  },
+];
 
+const Home: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [openModal, setOpenModal] = useState(false);
+
+  const handleSubmit = (data: {}): void => {};
 
   useIonViewWillEnter(() => {
     const msgs = getMessages();
@@ -33,25 +60,39 @@ const Home: React.FC = () => {
     <IonPage id="home-page">
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Inbox</IonTitle>
+          <div className="toolbar">
+            <IonSearchbar />
+            <IonButton
+              fill="clear"
+              style={{ heigth: '100%' }}
+              onClick={() => {
+                setOpenModal(true);
+              }}
+            >
+              ADD
+            </IonButton>
+          </div>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
         <IonRefresher slot="fixed" onIonRefresh={refresh}>
-          <IonRefresherContent></IonRefresherContent>
+          <IonRefresherContent />
         </IonRefresher>
-
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">
-              Inbox
-            </IonTitle>
-          </IonToolbar>
-        </IonHeader>
-
         <IonList>
-          {messages.map(m => <MessageListItem key={m.id} message={m} />)}
+          {messages.map((m) => (
+            <MessageListItem key={m.id} message={m} />
+          ))}
         </IonList>
+        {openModal && (
+          <FormDialog
+            inputs={inputs}
+            open={openModal}
+            submitButtonText="CREATE NEW USER"
+            title="Fill the fields bellow"
+            setOpen={setOpenModal}
+            onSubmit={handleSubmit}
+          />
+        )}
       </IonContent>
     </IonPage>
   );
