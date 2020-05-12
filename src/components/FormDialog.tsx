@@ -8,14 +8,13 @@ import {
   IonToolbar,
   IonHeader,
 } from '@ionic/react';
-import './MessageListItem.css';
 import { close } from 'ionicons/icons';
 
 interface FormDialogProps {
   inputs: any;
   open: boolean;
-  title: string;
-  submitButtonText: string;
+  title?: string;
+  submitButtonText?: string;
   setOpen: Function;
   onSubmit: Function;
 }
@@ -39,6 +38,10 @@ const FormDialog: React.FC<FormDialogProps> = ({
     values: {},
   });
 
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   const handleChange = (event: any) => {
     setFormState((state) => ({
       ...state,
@@ -49,9 +52,10 @@ const FormDialog: React.FC<FormDialogProps> = ({
     }));
   };
 
-  // const handleSubmit =(data : {})=>{
-  //   onSubmit(formState)
-  // }
+  const handleSubmit = (data: {}) => {
+    onSubmit(formState.values);
+    handleClose();
+  };
   return (
     <IonModal isOpen={open} keyboardClose={false} showBackdrop={false}>
       <IonContent>
@@ -78,7 +82,9 @@ const FormDialog: React.FC<FormDialogProps> = ({
             />
           ))}
         </div>
-        <IonButton expand="block">{submitButtonText || 'ACCEPT'}</IonButton>
+        <IonButton expand="block" onClick={handleSubmit}>
+          {submitButtonText || 'ACCEPT'}
+        </IonButton>
       </IonContent>
     </IonModal>
   );

@@ -11,10 +11,10 @@ import {
   IonButton,
   IonSearchbar,
 } from '@ionic/react';
-import MessageListItem from '../components/MessageListItem';
-import { Message, getMessages } from '../data/messages';
+import AthleteListItem from '../components/AthleteListItem';
 
 import FormDialog from '../components/FormDialog';
+import { firestore } from '../firebase';
 
 import './Home.css';
 
@@ -40,14 +40,26 @@ const inputs = [
 ];
 
 const Home: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [athletes, setAthletes] = useState<any[]>([]);
   const [openModal, setOpenModal] = useState(false);
 
-  const handleSubmit = (data: {}): void => {};
+  const handleSubmit = async (athlete: {}) => {
+    const docRef = await firestore.collection('athletes').add(athlete);
+    const doc = await docRef.get();
 
-  useIonViewWillEnter(() => {
-    const msgs = getMessages();
-    setMessages(msgs);
+    const newPost = { id: doc.id, ...doc.data() };
+
+    setAthletes((state) => [...state, newPost]);
+  };
+
+  useIonViewWillEnter(async () => {
+    const snapshot = await firestore.collection('athletes').get();
+    const athletesData = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    setAthletes(athletesData);
   });
 
   const refresh = (e: CustomEvent) => {
@@ -79,8 +91,8 @@ const Home: React.FC = () => {
           <IonRefresherContent />
         </IonRefresher>
         <IonList>
-          {messages.map((m) => (
-            <MessageListItem key={m.id} message={m} />
+          {athletes.map((m) => (
+            <AthleteListItem key={m.id} athlete={m} />
           ))}
         </IonList>
         {openModal && (
