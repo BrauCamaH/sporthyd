@@ -4,8 +4,6 @@ import {
   IonHeader,
   IonList,
   IonPage,
-  IonRefresher,
-  IonRefresherContent,
   IonToolbar,
   useIonViewWillEnter,
   IonButton,
@@ -62,12 +60,6 @@ const Home: React.FC = () => {
     setAthletes(athletesData);
   });
 
-  const refresh = (e: CustomEvent) => {
-    setTimeout(() => {
-      e.detail.complete();
-    }, 3000);
-  };
-
   return (
     <IonPage id="home-page">
       <IonHeader>
@@ -87,9 +79,6 @@ const Home: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <IonRefresher slot="fixed" onIonRefresh={refresh}>
-          <IonRefresherContent />
-        </IonRefresher>
         <IonList>
           {athletes.map((m) => (
             <AthleteListItem key={m.id} athlete={m} />
